@@ -32,6 +32,8 @@ public class FormatManager {
 		registerFormatter("accent", AccentFormatter.class);
 
 		// TODO ADD DEFAULT FORMATTERS
+
+		// TEST CHANGE
 	}
 
 	public void loadFormatters(ConfigurationSection section) {
