@@ -34,6 +34,7 @@ public class FormatManager {
 		// TODO ADD DEFAULT FORMATTERS
 
 		// TEST CHANGE
+		// ANOTHER
 	}
 
 	public void loadFormatters(ConfigurationSection section) {
