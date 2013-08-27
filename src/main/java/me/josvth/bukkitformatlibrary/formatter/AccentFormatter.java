@@ -2,6 +2,7 @@ package me.josvth.bukkitformatlibrary.formatter;
 
 import org.bukkit.ChatColor;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,24 +17,12 @@ public class AccentFormatter extends Formatter {
 	private final String begin;
 	private final String end;
 
-	public AccentFormatter(String name) {
-		this(name, DEFAULT_BEGIN, DEFAULT_END, DEFAULT_ACCENT_COLOR);
-	}
-
 	public AccentFormatter(String name, Map<String, Object> settings) {
-		this(
-				name,
-				(settings.get("begin") instanceof String)? (String)settings.get("begin"): DEFAULT_BEGIN,
-				(settings.get("end") instanceof String)? (String)settings.get("end"): DEFAULT_END,
-				(settings.get("accent-color") instanceof String)? ChatColor.getByChar((String) settings.get("accent-color")): DEFAULT_ACCENT_COLOR
-			);
-	}
+		super(name, settings);
 
-	public AccentFormatter(String name, String begin, String end, ChatColor accentColor) {
-		super(name);
-		this.begin = begin;
-		this.end = end;
-		this.accentColor = accentColor;
+		begin = (settings.get("begin") instanceof String)? (String)settings.get("begin"): DEFAULT_BEGIN;
+		end = (settings.get("end") instanceof String)? (String)settings.get("end"): DEFAULT_END;
+		accentColor = (settings.get("accent-color") instanceof String)? ChatColor.getByChar((String) settings.get("accent-color")): DEFAULT_ACCENT_COLOR;
 	}
 
 	@Override
@@ -43,8 +32,48 @@ public class AccentFormatter extends Formatter {
 
 		Matcher matcher = Pattern.compile(regex).matcher(message);
 
-		//TODO make this work soon
+		ArrayList<String> parts = new ArrayList<String>();
 
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+		int lastPartEnd = 0;
+
+		while (matcher.find()) {
+
+			if (matcher.start() == 0) // if we found a highlight at the start we first add an empty string
+				parts.add("");
+			else
+				parts.add(message.substring(lastPartEnd, matcher.start())); // if not we add the characters between the previous highligh and this one
+
+			lastPartEnd = matcher.end(); // we remember the end of the last highlight
+
+			parts.add(matcher.group().substring(begin.length(), matcher.group().length() - end.length())); // we add the highlighted part
+
+		}
+
+		if (lastPartEnd < message.length())
+			parts.add(message.substring(lastPartEnd, message.length()));
+
+		String lastColors = "";
+
+		StringBuilder result = new StringBuilder(parts.get(0));
+
+		for(int i = 1; i < parts.size(); i++) { // cycle through all positions
+
+			if(i % 2 == 0) {// is position is even, append text color
+				if (lastColors == "")
+					result.append(ChatColor.RESET);
+				else
+					result.append(lastColors);
+			} else {// if position is odd, append accent color
+				lastColors = ChatColor.getLastColors(result.toString());
+				result.append(accentColor);
+			}
+
+			result.append(parts.get(i));
+
+		}
+
+		return result.toString();
+
 	}
+
 }

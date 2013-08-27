@@ -1,6 +1,7 @@
 package me.josvth.bukkitformatlibrary;
 
 import me.josvth.bukkitformatlibrary.formatter.AccentFormatter;
+import me.josvth.bukkitformatlibrary.formatter.ColorFormatter;
 import me.josvth.bukkitformatlibrary.formatter.Formatter;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -13,14 +14,12 @@ public class FormatManager {
 
 	private final String groupIdentifier;
 
-	private FormatterGroup defaultGroup = null;
-
 	private final Map<String, Class<? extends Formatter>> registeredFormatters = new HashMap<String, Class<? extends Formatter>>();
 
 	private final Map<String, Formatter> formatters 	= new HashMap<String, Formatter>();
 	private final Map<String, FormatterGroup> groups 	= new HashMap<String, FormatterGroup>();
 	private final Map<String, String> messages 			= new HashMap<String, String>();
-	private final Map<String, String> preFormatted 		= new HashMap<String, String>();
+	private final Map<String, FormattedMessage> preFormatted = new HashMap<String, FormattedMessage>();
 
 	public FormatManager() {
 		this("%%");
@@ -30,11 +29,8 @@ public class FormatManager {
 		this.groupIdentifier = groupIdentifier;
 
 		registerFormatter("accent", AccentFormatter.class);
+		registerFormatter("color", ColorFormatter.class);
 
-		// TODO ADD DEFAULT FORMATTERS
-
-		// TEST CHANGE
-		// ANOTHER
 	}
 
 	public void loadFormatters(ConfigurationSection section) {
@@ -42,17 +38,14 @@ public class FormatManager {
 		for (String key : section.getKeys(false)) {
 
 			// We get the formatter class
-			Class<? extends Formatter> clazz = registeredFormatters.get(key + ".type");
+			Class<? extends Formatter> clazz = getRegisteredFormatter(section.getString(key + ".type"));
 
 			if (clazz != null) {
 				try {
 
 					Formatter formatter = null;
 
-					if (section.isConfigurationSection(key + ".settings"))
-						formatter = clazz.getConstructor(String.class, Map.class).newInstance(key, section.getConfigurationSection(key + ".settings").getValues(false));
-					else
-						formatter = clazz.getConstructor(String.class).newInstance(key);
+					formatter = clazz.getConstructor(String.class, Map.class).newInstance(key, section.getConfigurationSection(key + ".settings").getValues(false));
 
 					// We add it
 					addFormatter(formatter);
@@ -92,7 +85,7 @@ public class FormatManager {
 				String message = section.getString(key);
 
 				// Check if we can pre format this message
-				Matcher matcher = Pattern.compile(String.format("%s[^ ]+%s", groupIdentifier)).matcher(message);
+				Matcher matcher = Pattern.compile(String.format("%s[^ ]+%s", groupIdentifier, groupIdentifier)).matcher(message);
 
 				if (matcher.lookingAt()) {
 
@@ -118,7 +111,8 @@ public class FormatManager {
 					}
 
 					// Only if we could pre-format the message we add it
-					addPareFormattedMessage(key, preFormat);
+					if (preFormat != null)
+						addPreFormattedMessage(key, new FormattedMessage(preFormat));
 
 				}
 
@@ -139,24 +133,15 @@ public class FormatManager {
 
 			// We register the formatter
 			registeredFormatters.put(ID.toLowerCase(), formatter);
-			return;
 
 		} catch (NoSuchMethodException e) {
 
 		}
 
-		try {
+	}
 
-			formatter.getConstructor(String.class);
-
-			// We register the formatter
-			registeredFormatters.put(ID.toLowerCase(), formatter);
-			return;
-
-		} catch (NoSuchMethodException e) {
-			throw new IllegalArgumentException("Formatter does not have a valid constructor.");
-		}
-
+	public Class<? extends Formatter> getRegisteredFormatter(String ID) {
+		return registeredFormatters.get(ID.toLowerCase());
 	}
 
 	public void addFormatter(Formatter formatter) {
@@ -182,13 +167,68 @@ public class FormatManager {
 		return group;
 	}
 
+	public FormatterGroup getDefaultGroup() {
+		return groups.get("default");
+	}
+
 	// Message methods
 	public void addMessage(String key, String message) {
 		messages.put(key.toLowerCase(), message);
 	}
 
-	public void addPareFormattedMessage(String key, String preFormat) {
-		preFormatted.put(key.toLowerCase(), preFormat);
+	public String getMessage(String path) {
+		return messages.get(path.toLowerCase());
 	}
 
+	public void addPreFormattedMessage(String key, FormattedMessage message) {
+		preFormatted.put(key.toLowerCase(), message);
+	}
+
+	public FormattedMessage getPreFormattedMessage(String path) {
+		return preFormatted.get(path.toLowerCase());
+	}
+
+	public FormattedMessage create(String path) {
+
+		FormattedMessage message = getPreFormattedMessage(path);
+		if (message != null) return message;
+
+		return create(getDefaultGroup(), path);
+
+	}
+
+	public FormattedMessage create(String groupName, String path) {
+		return create(getGroup(groupName, getDefaultGroup()), path);
+	}
+
+	public FormattedMessage create(FormatterGroup group, String path) {
+
+		String message = getMessage(path);
+
+		if (message == null)
+			return new FormattedMessage(path);
+
+		if (group == null)
+			return new FormattedMessage(message);
+		else
+			return new FormattedMessage(group.format(message));
+
+	}
+
+	public FormattedMessage createRaw(String message) {
+		return new FormattedMessage(getDefaultGroup().format(message));
+	}
+
+	public FormattedMessage createRaw(String groupName, String message) {
+		return createRaw(getGroup(groupName), message);
+	}
+	
+	public FormattedMessage createRaw(FormatterGroup group, String message) {
+
+		if (group == null)
+			return new FormattedMessage(message);
+		else
+			return new FormattedMessage(group.format(message));
+
+	}
 }

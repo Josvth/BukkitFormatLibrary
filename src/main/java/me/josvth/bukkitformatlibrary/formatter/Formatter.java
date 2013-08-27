@@ -2,12 +2,13 @@ package me.josvth.bukkitformatlibrary.formatter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class Formatter {
 
 	private final String name;
 
-	public Formatter(String name) {
+	public Formatter(String name, Map<String, Object> settings) {
 		this.name = name;
 	}
 
