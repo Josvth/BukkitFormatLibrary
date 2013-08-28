@@ -14,12 +14,12 @@ import java.util.regex.Pattern;
 
 public class FormatManager {
 
-	private final Map<String, Class<? extends Formatter>> registeredFormatters = new HashMap<String, Class<? extends Formatter>>();
+	protected final Map<String, Class<? extends Formatter>> registeredFormatters = new HashMap<String, Class<? extends Formatter>>();
 
-	private final Map<String, Formatter> formatters 	= new HashMap<String, Formatter>();
-	private final Map<String, FormatterGroup> groups 	= new HashMap<String, FormatterGroup>();
-	private final Map<String, String> messages 			= new HashMap<String, String>();
-	private final Map<String, FormattedMessage> preFormatted = new HashMap<String, FormattedMessage>();
+	protected final Map<String, Formatter> formatters 	= new HashMap<String, Formatter>();
+	protected final Map<String, FormatterGroup> groups 	= new HashMap<String, FormatterGroup>();
+	protected final Map<String, String> messages 			= new HashMap<String, String>();
+	protected final Map<String, FormattedMessage> preFormatted = new HashMap<String, FormattedMessage>();
 
 	public FormatManager() {
 		registerFormatter("accent", AccentFormatter.class);

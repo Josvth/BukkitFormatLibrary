@@ -20,6 +20,6 @@ public class ColorFormatter extends Formatter {
 
 	@Override
 	public String format(String message) {
-		return mainColor + ChatColor.translateAlternateColorCodes(colorChar, message);  //To change body of implemented methods use File | Settings | File Templates.
+		return mainColor + ChatColor.translateAlternateColorCodes(colorChar, message);
 	}
 }
