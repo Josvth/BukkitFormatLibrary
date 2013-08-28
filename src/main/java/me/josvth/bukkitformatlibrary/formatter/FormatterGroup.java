@@ -1,4 +1,4 @@
-package me.josvth.bukkitformatlibrary;
+package me.josvth.bukkitformatlibrary.formatter;
 
 import me.josvth.bukkitformatlibrary.formatter.Formatter;
 
