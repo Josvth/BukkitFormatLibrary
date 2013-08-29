@@ -16,6 +16,10 @@ public class YamlFormatManager extends FormatManager {
 	public YamlFormatManager() {
 		super();
 	}
+	
+	public YamlFormatManager(FormatManager manager, boolean includeMessages) {
+		super(manager, includeMessages);
+	}
 
 	public YamlFormatManager(ConfigurationSection formattersSection, ConfigurationSection groupsSection, ConfigurationSection messageSection, String groupIdentifier) {
 		loadFormatters(formattersSection);
@@ -69,13 +73,15 @@ public class YamlFormatManager extends FormatManager {
 
 	public void loadMessages(ConfigurationSection section, String groupIdentifier) {
 
+		Pattern pattern = Pattern.compile(String.format("%s[^ ]+%s", groupIdentifier, groupIdentifier));
+		
 		for (String key : section.getKeys(true)) {
 			if (section.isString(key)) {
 
 				String message = section.getString(key);
 
 				// Check if we can pre format this message
-				Matcher matcher = Pattern.compile(String.format("%s[^ ]+%s", groupIdentifier, groupIdentifier)).matcher(message);
+				Matcher matcher = pattern.matcher(message);
 
 				if (matcher.lookingAt()) {
 
