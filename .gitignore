@@ -1,6 +1,10 @@
 /lib
 /.idea
+<<<<<<< HEAD
 .settings/
+=======
+/.settings
+>>>>>>> upstream/master
 .classpath
 .project
 /bin
@@ -9,7 +13,11 @@ build.xml
 maven-build.xml
 maven-build.properties
 dependency-reduced-pom.xml
+<<<<<<< HEAD
 target/
+=======
+/target
+>>>>>>> upstream/master
 /dist
 *.eml
 *.iml

@@ -18,7 +18,7 @@ public class FormatManager {
 
 	protected final Map<String, Formatter> formatters 	= new HashMap<String, Formatter>();
 	protected final Map<String, FormatterGroup> groups 	= new HashMap<String, FormatterGroup>();
-	protected final Map<String, String> messages 			= new HashMap<String, String>();
+	protected final Map<String, String> messages 		= new HashMap<String, String>();
 	protected final Map<String, FormattedMessage> preFormatted = new HashMap<String, FormattedMessage>();
 
 	public FormatManager() {
