@@ -6,11 +6,7 @@ import me.josvth.bukkitformatlibrary.formatter.AccentFormatter;
 import me.josvth.bukkitformatlibrary.formatter.ColorFormatter;
 import me.josvth.bukkitformatlibrary.formatter.Formatter;
 
-import org.bukkit.configuration.ConfigurationSection;
-
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class FormatManager {
 
@@ -24,6 +20,16 @@ public class FormatManager {
 	public FormatManager() {
 		registerFormatter("accent", AccentFormatter.class);
 		registerFormatter("color", ColorFormatter.class);
+	}
+	
+	public FormatManager(FormatManager manager, boolean includeMessages) {
+		registeredFormatters.putAll(manager.registeredFormatters);
+		formatters.putAll(manager.formatters);
+		groups.putAll(manager.groups);
+		if(includeMessages) {
+			messages.putAll(manager.messages);
+			preFormatted.putAll(manager.preFormatted);
+		}
 	}
 
 	// Formatter methods
