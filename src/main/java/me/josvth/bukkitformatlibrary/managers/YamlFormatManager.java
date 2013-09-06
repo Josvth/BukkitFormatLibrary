@@ -5,6 +5,7 @@ import me.josvth.bukkitformatlibrary.formatter.Formatter;
 import me.josvth.bukkitformatlibrary.formatter.FormatterGroup;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,15 +32,14 @@ public class YamlFormatManager extends FormatManager {
 
 		for (String key : section.getKeys(false)) {
 
-			// We get the formatter class
-			Class<? extends Formatter> clazz = getRegisteredFormatter(section.getString(key + ".type"));
+			Class<? extends Formatter> clazz = getRegisteredFormatter(getType(section, key));
 
 			if (clazz != null) {
 				try {
 
 					Formatter formatter = null;
 
-					formatter = clazz.getConstructor(String.class, Map.class).newInstance(key, section.getConfigurationSection(key + ".settings").getValues(false));
+					formatter = clazz.getConstructor(String.class, Map.class).newInstance(key, getSettings(section, key));
 
 					// We add it
 					addFormatter(formatter);
@@ -50,6 +50,40 @@ public class YamlFormatManager extends FormatManager {
 			}
 
 		}
+	}
+
+	private String getType(ConfigurationSection section, String formatterID) {
+
+		String type = section.getString(formatterID + ".type");
+
+		if (type != null)
+			return type;
+
+		if (section.isString(formatterID + ".parent"))
+			type = getType(section, formatterID + ".parent");
+
+		return type;
+
+	}
+
+	private Map<String, Object> getSettings(ConfigurationSection section, String formatterID) {
+
+		Map<String, Object> settings = null;
+
+		if (section.isString(formatterID + ".parent")) {
+			settings = getSettings(section, formatterID + ".parent");
+		}
+
+		if (section.isConfigurationSection(formatterID + ".settings")) {
+			if (settings == null) {
+				settings = section.getConfigurationSection(formatterID + ".settings").getValues(false);
+			} else {
+				settings.putAll(section.getConfigurationSection(formatterID + ".settings").getValues(false));
+			}
+		}
+
+		return settings;
+
 	}
 
 	public void loadGroups(ConfigurationSection section) {
@@ -119,4 +153,8 @@ public class YamlFormatManager extends FormatManager {
 
 	}
 
+	private static final void putAllUnique(Map<String, Object> mapA, Map<String, Object> mapB) {
+		for (Map.Entry<String, Object> entry : mapB.entrySet())
+			if (!mapA.containsKey(entry.getKey())) mapA.put(entry.getKey(), entry.getValue());
+	}
 }
