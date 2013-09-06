@@ -85,37 +85,37 @@ public class FormatManager {
 		messages.put(key.toLowerCase(), message);
 	}
 
-	public String getMessage(String path) {
-		return messages.get(path.toLowerCase());
+	public String getMessage(String key) {
+		return messages.get(key.toLowerCase());
 	}
 
 	public void addPreFormattedMessage(String key, FormattedMessage message) {
 		preFormatted.put(key.toLowerCase(), message);
 	}
 
-	public FormattedMessage getPreFormattedMessage(String path) {
-		return preFormatted.get(path.toLowerCase());
+	public FormattedMessage getPreFormattedMessage(String key) {
+		return preFormatted.get(key.toLowerCase());
 	}
 
-	public FormattedMessage create(String path) {
+	public FormattedMessage create(String key) {
 
-		FormattedMessage message = getPreFormattedMessage(path);
+		FormattedMessage message = getPreFormattedMessage(key);
 		if (message != null) return message;
 
-		return create(getDefaultGroup(), path);
+		return create(getDefaultGroup(), key);
 
 	}
 
-	public FormattedMessage create(String groupName, String path) {
-		return create(getGroup(groupName, getDefaultGroup()), path);
+	public FormattedMessage create(String groupName, String key) {
+		return create(getGroup(groupName, getDefaultGroup()), key);
 	}
 
-	public FormattedMessage create(FormatterGroup group, String path) {
+	public FormattedMessage create(FormatterGroup group, String key) {
 
-		String message = getMessage(path);
+		String message = getMessage(key);
 
 		if (message == null)
-			return new FormattedMessage(path);
+			return new FormattedMessage(key);
 
 		if (group == null)
 			return new FormattedMessage(message);
