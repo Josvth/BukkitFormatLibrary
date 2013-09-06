@@ -1,9 +1,7 @@
 package me.josvth.bukkitformatlibrary.managers;
 
 import me.josvth.bukkitformatlibrary.FormattedMessage;
-import me.josvth.bukkitformatlibrary.formatter.FormatterGroup;
-import me.josvth.bukkitformatlibrary.formatter.AccentFormatter;
-import me.josvth.bukkitformatlibrary.formatter.ColorFormatter;
+import me.josvth.bukkitformatlibrary.formatter.*;
 import me.josvth.bukkitformatlibrary.formatter.Formatter;
 
 import java.util.*;
@@ -20,6 +18,7 @@ public class FormatManager {
 	public FormatManager() {
 		registerFormatter("accent", AccentFormatter.class);
 		registerFormatter("color", ColorFormatter.class);
+		registerFormatter("fixer", FixerFormatter.class);
 	}
 	
 	public FormatManager(FormatManager manager, boolean includeMessages) {
