@@ -4,26 +4,20 @@ import me.josvth.bukkitformatlibrary.formatter.Formatter;
 
 import java.util.List;
 
-public class FormatterGroup {
-
-	private final String ID;
+public class FormatterGroup extends Formatter {
 
 	private final List<Formatter> formatters;
 
-	public FormatterGroup(String ID, List<Formatter> formatters) {
-		this.ID = ID.toLowerCase();
+	public FormatterGroup(String name, List<Formatter> formatters) {
+		super(name, null);
 		this.formatters = formatters;
 	}
 
-	public String getID() {
-		return ID;
-	}
-
+	@Override
 	public String format(String message) {
 		for (Formatter formatter : formatters)
 			message = formatter.format(message);
 		return message;
 	}
-
 
 }

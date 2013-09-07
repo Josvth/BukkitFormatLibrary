@@ -5,10 +5,7 @@ import me.josvth.bukkitformatlibrary.formatter.Formatter;
 import me.josvth.bukkitformatlibrary.formatter.FormatterGroup;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,68 +14,185 @@ public class YamlFormatManager extends FormatManager {
 	public YamlFormatManager() {
 		super();
 	}
-	
+
 	public YamlFormatManager(FormatManager manager, boolean includeMessages) {
 		super(manager, includeMessages);
 	}
 
-	public YamlFormatManager(ConfigurationSection formattersSection, ConfigurationSection groupsSection, ConfigurationSection messageSection, String groupIdentifier) {
+	public YamlFormatManager(ConfigurationSection formattersSection, ConfigurationSection messageSection, String groupIdentifier) {
 		loadFormatters(formattersSection);
-		loadGroups(groupsSection);
 		loadMessages(messageSection, groupIdentifier);
 	}
 
 	public void loadFormatters(ConfigurationSection section) {
 
-		for (String key : section.getKeys(false)) {
+		Set<String> unloadedFormatters = section.getKeys(false);
 
-			Class<? extends Formatter> clazz = getRegisteredFormatter(getType(section, key));
+		int iteration = 0;
 
-			if (clazz != null) {
-				try {
+		while (iteration < 10) {
 
-					Formatter formatter = null;
+			Iterator<String> iterator = unloadedFormatters.iterator();
 
-					formatter = clazz.getConstructor(String.class, Map.class).newInstance(key, getSettings(section, key));
+			while (iterator.hasNext()) {
 
-					// We add it
-					addFormatter(formatter);
+				String name = iterator.next();
 
-				} catch (Exception e) {
-					e.printStackTrace();
+				String type = getType(section, name, null);
+
+				if ("group".equalsIgnoreCase(type)) {
+
+					try {
+
+						List<String> formatterNames = getFormatterNames(section, name, null);
+
+						if (formatterNames != null) {
+
+							// Check if all groups formatters are loaded
+							if (this.formatters.keySet().containsAll(formatterNames)) {
+
+								List<Formatter> formatters = new ArrayList<Formatter>();
+
+								// Make formatter list
+								for (String formatter : formatterNames) {
+									formatters.add(getFormatter(formatter));
+								}
+
+								// Add group formatter
+								formatters.add(new FormatterGroup(name, formatters));
+
+								// Remove from unloaded
+								iterator.remove();
+
+							}
+
+						} else {
+
+							// Remove from unloaded
+							iterator.remove();
+
+						}
+
+
+					} catch (IllegalArgumentException e) {
+						e.printStackTrace();
+					}
+
+				} else if (type != null) {
+
+					Class<? extends Formatter> clazz = getRegisteredFormatter(type);
+
+					if (clazz != null) {
+
+						try {
+
+							Formatter formatter = clazz.getConstructor(String.class, Map.class).newInstance(name, getSettings(section, name, null));
+
+							addFormatter(formatter);
+
+
+
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
+					}
+
+					// Remove from unloaded
+					iterator.remove();
+
 				}
+
 			}
 
+			iteration++;
+
 		}
+
 	}
 
-	private String getType(ConfigurationSection section, String formatterID) {
+	private List<String> getFormatterNames(ConfigurationSection section, String groupName, Set<String> children) throws IllegalArgumentException {
 
-		String type = section.getString(formatterID + ".type");
+		List<String> formatters = null;
+
+		if (section.isString(groupName + ".parent")) {
+			if (children == null) children = new HashSet<String>();
+			children.add(groupName);
+			formatters = getFormatterNames(section, groupName + ".parent", children);
+		}
+
+		List<String> groupFormatters = section.getStringList(groupName + ".formatters");
+
+		if (groupFormatters != null) {
+			if (formatters == null) {
+				formatters = groupFormatters;
+			} else {
+				formatters.addAll(groupFormatters);
+			}
+		}
+
+		if (children != null) {
+			for (String formatter : formatters) {
+				if (children.contains(formatter))
+					throw new IllegalArgumentException(formatter + " loops with " + groupName + "!");
+			}
+		}
+
+		return formatters;
+
+	}
+
+	private String getType(ConfigurationSection section, String formatterName, Set<String> children) throws IllegalArgumentException {
+
+		String type = section.getString(formatterName + ".type");
 
 		if (type != null)
 			return type;
 
-		if (section.isString(formatterID + ".parent"))
-			type = getType(section, formatterID + ".parent");
+		String parentName = section.getString(formatterName + ".parent");
+
+		if (parentName != null) {
+
+			for (String child : children)
+				if (parentName.equals(child)) throw new IllegalArgumentException(formatterName + " loops with " + parentName);
+
+			if (children == null) children = new HashSet<String>();
+
+			children.add(formatterName);
+
+			type = getType(section, parentName, children);
+
+		}
 
 		return type;
 
 	}
 
-	private Map<String, Object> getSettings(ConfigurationSection section, String formatterID) {
+	private Map<String, Object> getSettings(ConfigurationSection section, String formatterName, Set<String> children) throws IllegalArgumentException {
 
 		Map<String, Object> settings = null;
 
-		if (section.isString(formatterID + ".parent")) {
-			settings = getSettings(section, formatterID + ".parent");
+		String parentName = section.getString(formatterName + ".parent");
+
+		if (parentName != null) {
+
+			for (String child : children)
+				if (parentName.equals(child))
+					throw new IllegalArgumentException(formatterName + " loops with " + parentName);
+
+			if (children == null) children = new HashSet<String>();
+
+			children.add(formatterName);
+
+			settings = getSettings(section, parentName, children);
+
 		}
 
-		if (section.isConfigurationSection(formatterID + ".settings")) {
+		if (section.isConfigurationSection(formatterName + ".settings")) {
 			if (settings == null) {
-				settings = section.getConfigurationSection(formatterID + ".settings").getValues(false);
+				settings = section.getConfigurationSection(formatterName + ".settings").getValues(false);
 			} else {
-				settings.putAll(section.getConfigurationSection(formatterID + ".settings").getValues(false));
+				settings.putAll(section.getConfigurationSection(formatterName + ".settings").getValues(false));
 			}
 		}
 
@@ -86,29 +200,10 @@ public class YamlFormatManager extends FormatManager {
 
 	}
 
-	public void loadGroups(ConfigurationSection section) {
-		for (String key : section.getKeys(false)) {
-			if (section.isList(key)) {
-
-				List<Formatter> formatters = new LinkedList<Formatter>();
-
-				// We add all loaded formatters to the list
-				for (String formatterName : section.getStringList(key)) {
-					Formatter formatter = getFormatter(formatterName);
-					if (formatter != null) formatters.add(formatter);
-				}
-
-				// And we add the formatter group
-				addGroup(new FormatterGroup(key, formatters));
-
-			}
-		}
-	}
-
 	public void loadMessages(ConfigurationSection section, String groupIdentifier) {
 
 		Pattern pattern = Pattern.compile(String.format("%s[^ ]+%s", groupIdentifier, groupIdentifier));
-		
+
 		for (String key : section.getKeys(true)) {
 			if (section.isString(key)) {
 
@@ -119,7 +214,7 @@ public class YamlFormatManager extends FormatManager {
 
 				if (matcher.lookingAt()) {
 
-					String[] groupNames = matcher.group().split(Pattern.quote("|"));
+					String[] formatterNames = matcher.group().split(Pattern.quote("|"));
 
 					// We take the rest of the string as the message
 					message = message.substring(matcher.end());
@@ -127,17 +222,20 @@ public class YamlFormatManager extends FormatManager {
 					String preFormat = null;
 
 					// We pre-format the message with the groups
-					for (String groupName : groupNames) {
-						FormatterGroup group = getGroup(groupName);
-						if (group != null) {
+					for (String formatterName : formatterNames) {
+
+						Formatter formatter = getFormatter(formatterName);
+
+						if (formatter != null) {
 
 							// Only if we found a valid group we initialize the variable
 							if (preFormat == null) preFormat = message;
 
 							// We pre-format the message following this group
-							preFormat = group.format(preFormat);
+							preFormat = formatter.format(preFormat);
 
 						}
+
 					}
 
 					// Only if we could pre-format the message we add it
@@ -153,8 +251,4 @@ public class YamlFormatManager extends FormatManager {
 
 	}
 
-	private static final void putAllUnique(Map<String, Object> mapA, Map<String, Object> mapB) {
-		for (Map.Entry<String, Object> entry : mapB.entrySet())
-			if (!mapA.containsKey(entry.getKey())) mapA.put(entry.getKey(), entry.getValue());
-	}
 }

@@ -11,7 +11,6 @@ public class FormatManager {
 	protected final Map<String, Class<? extends Formatter>> registeredFormatters = new HashMap<String, Class<? extends Formatter>>();
 
 	protected final Map<String, Formatter> formatters 	= new HashMap<String, Formatter>();
-	protected final Map<String, FormatterGroup> groups 	= new HashMap<String, FormatterGroup>();
 	protected final Map<String, String> messages 		= new HashMap<String, String>();
 	protected final Map<String, FormattedMessage> preFormatted = new HashMap<String, FormattedMessage>();
 
@@ -24,7 +23,6 @@ public class FormatManager {
 	public FormatManager(FormatManager manager, boolean includeMessages) {
 		registeredFormatters.putAll(manager.registeredFormatters);
 		formatters.putAll(manager.formatters);
-		groups.putAll(manager.groups);
 		if(includeMessages) {
 			messages.putAll(manager.messages);
 			preFormatted.putAll(manager.preFormatted);
@@ -43,7 +41,7 @@ public class FormatManager {
 			registeredFormatters.put(ID.toLowerCase(), formatter);
 
 		} catch (NoSuchMethodException e) {
-
+			e.printStackTrace();
 		}
 
 	}
@@ -60,23 +58,12 @@ public class FormatManager {
 		return formatters.get(formatterName.toLowerCase());
 	}
 
-	// Group methods
-	public void addGroup(FormatterGroup group) {
-		groups.put(group.getID(), group);
+	public Map<String, Formatter> getFormatters() {
+		return formatters;
 	}
 
-	public FormatterGroup getGroup(String groupName) {
-		return groups.get(groupName.toLowerCase());
-	}
-
-	public FormatterGroup getGroup(String groupName, FormatterGroup def) {
-		FormatterGroup group = getGroup(groupName);
-		if (group == null) return def;
-		return group;
-	}
-
-	public FormatterGroup getDefaultGroup() {
-		return groups.get("default");
+	public Formatter getDefaultFormatter() {
+		return formatters.get("default");
 	}
 
 	// Message methods
@@ -101,42 +88,42 @@ public class FormatManager {
 		FormattedMessage message = getPreFormattedMessage(key);
 		if (message != null) return message;
 
-		return create(getDefaultGroup(), key);
+		return create(getDefaultFormatter(), key);
 
 	}
 
-	public FormattedMessage create(String groupName, String key) {
-		return create(getGroup(groupName, getDefaultGroup()), key);
+	public FormattedMessage create(String formatterName, String key) {
+		return create(getFormatter(formatterName), key);
 	}
 
-	public FormattedMessage create(FormatterGroup group, String key) {
+	public FormattedMessage create(Formatter formatter, String key) {
 
 		String message = getMessage(key);
 
 		if (message == null)
 			return new FormattedMessage(key);
 
-		if (group == null)
+		if (formatter == null)
 			return new FormattedMessage(message);
 		else
-			return new FormattedMessage(group.format(message));
+			return new FormattedMessage(formatter.format(message));
 
 	}
 
 	public FormattedMessage createRaw(String message) {
-		return new FormattedMessage(getDefaultGroup().format(message));
+		return new FormattedMessage(getDefaultFormatter().format(message));
 	}
 
-	public FormattedMessage createRaw(String groupName, String message) {
-		return createRaw(getGroup(groupName), message);
+	public FormattedMessage createRaw(String formatterName, String message) {
+		return createRaw(getFormatter(formatterName), message);
 	}
 	
-	public FormattedMessage createRaw(FormatterGroup group, String message) {
+	public FormattedMessage createRaw(Formatter formatter, String message) {
 
-		if (group == null)
+		if (formatter == null)
 			return new FormattedMessage(message);
 		else
-			return new FormattedMessage(group.format(message));
+			return new FormattedMessage(formatter.format(message));
 
 	}
 }
