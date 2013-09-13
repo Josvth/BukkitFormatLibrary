@@ -153,10 +153,13 @@ public class YamlFormatManager extends FormatManager {
 
 		if (parentName != null) {
 
-			for (String child : children)
-				if (parentName.equals(child)) throw new IllegalArgumentException(formatterName + " loops with " + parentName);
-
-			if (children == null) children = new HashSet<String>();
+			if (children == null) {
+				children = new HashSet<String>();
+			} else {
+				for (String child : children)
+					if (parentName.equals(child))
+						throw new IllegalArgumentException(formatterName + " loops with " + parentName);
+			}
 
 			children.add(formatterName);
 
@@ -176,11 +179,13 @@ public class YamlFormatManager extends FormatManager {
 
 		if (parentName != null) {
 
-			for (String child : children)
-				if (parentName.equals(child))
-					throw new IllegalArgumentException(formatterName + " loops with " + parentName);
-
-			if (children == null) children = new HashSet<String>();
+			if (children == null) {
+				children = new HashSet<String>();
+			} else {
+				for (String child : children)
+					if (parentName.equals(child))
+						throw new IllegalArgumentException(formatterName + " loops with " + parentName);
+			}
 
 			children.add(formatterName);
 
