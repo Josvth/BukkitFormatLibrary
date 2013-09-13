@@ -10,6 +10,10 @@ public class FormattedMessage {
 		this.message = message;
 	}
 
+	public String get() {
+		return message;
+	}
+	
 	public String get(String... arguments) {
 
 		String message = this.message;
