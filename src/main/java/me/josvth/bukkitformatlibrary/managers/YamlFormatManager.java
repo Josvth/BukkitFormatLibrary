@@ -51,15 +51,15 @@ public class YamlFormatManager extends FormatManager {
 							// Check if all groups formatters are loaded
 							if (this.formatters.keySet().containsAll(formatterNames)) {
 
-								List<Formatter> formatters = new ArrayList<Formatter>();
+								List<Formatter> groupFormatters = new ArrayList<Formatter>();
 
 								// Make formatter list
 								for (String formatter : formatterNames) {
-									formatters.add(getFormatter(formatter));
+									groupFormatters.add(getFormatter(formatter));
 								}
 
 								// Add group formatter
-								formatters.add(new FormatterGroup(name, formatters));
+								formatters.put(name, new FormatterGroup(name, groupFormatters));
 
 								// Remove from unloaded
 								iterator.remove();
