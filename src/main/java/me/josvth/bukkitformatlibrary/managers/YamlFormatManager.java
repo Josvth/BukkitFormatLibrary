@@ -19,9 +19,9 @@ public class YamlFormatManager extends FormatManager {
 		super(manager, includeMessages);
 	}
 
-	public YamlFormatManager(ConfigurationSection formattersSection, ConfigurationSection messageSection, String groupIdentifier) {
+	public YamlFormatManager(ConfigurationSection formattersSection, ConfigurationSection messageSection) {
 		loadFormatters(formattersSection);
-		loadMessages(messageSection, groupIdentifier);
+		loadMessages(messageSection);
 	}
 
 	public void loadFormatters(ConfigurationSection section) {
@@ -205,9 +205,9 @@ public class YamlFormatManager extends FormatManager {
 
 	}
 
-	public void loadMessages(ConfigurationSection section, String groupIdentifier) {
+	public void loadMessages(ConfigurationSection section) {
 
-		Pattern pattern = Pattern.compile(String.format("%s[^ ]+%s", groupIdentifier, groupIdentifier));
+		Pattern pattern = Pattern.compile("%%[^ ]+%%");
 
 		for (String key : section.getKeys(true)) {
 			if (section.isString(key)) {
