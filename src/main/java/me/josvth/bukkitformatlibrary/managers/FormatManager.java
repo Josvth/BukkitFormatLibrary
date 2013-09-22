@@ -71,59 +71,42 @@ public class FormatManager {
 		messages.put(key.toLowerCase(), message);
 	}
 
-	public String getMessage(String key) {
-		return messages.get(key.toLowerCase());
-	}
-
 	public void addPreFormattedMessage(String key, FormattedMessage message) {
 		preFormatted.put(key.toLowerCase(), message);
 	}
 
-	public FormattedMessage getPreFormattedMessage(String key) {
+	public String getUnformattedMessage(String key) {
+		return messages.get(key.toLowerCase());
+	}
+
+	public FormattedMessage getPreformattedMessage(String key) {
 		return preFormatted.get(key.toLowerCase());
 	}
 
-	public FormattedMessage create(String key) {
+	public FormattedMessage getMessage(String key) {
 
-		FormattedMessage message = getPreFormattedMessage(key);
+		FormattedMessage message = getPreformattedMessage(key);
+
 		if (message != null) return message;
 
-		return create(getDefaultFormatter(), key);
+		return getMessage("default", key);
 
 	}
 
-	public FormattedMessage create(String formatterName, String key) {
-		return create(getFormatter(formatterName), key);
-	}
+	public FormattedMessage getMessage(String formatterName, String key) {
 
-	public FormattedMessage create(Formatter formatter, String key) {
-
-		String message = getMessage(key);
+		final String message = getUnformattedMessage(key);
 
 		if (message == null)
 			return new FormattedMessage(key);
 
-		if (formatter == null)
-			return new FormattedMessage(message);
-		else
-			return new FormattedMessage(formatter.format(message));
-
-	}
-
-	public FormattedMessage createRaw(String message) {
-		return new FormattedMessage(getDefaultFormatter().format(message));
-	}
-
-	public FormattedMessage createRaw(String formatterName, String message) {
-		return createRaw(getFormatter(formatterName), message);
-	}
-	
-	public FormattedMessage createRaw(Formatter formatter, String message) {
+		final Formatter formatter = getFormatter(formatterName);
 
 		if (formatter == null)
 			return new FormattedMessage(message);
 		else
-			return new FormattedMessage(formatter.format(message));
+			return formatter.format(message);
 
 	}
+
 }
