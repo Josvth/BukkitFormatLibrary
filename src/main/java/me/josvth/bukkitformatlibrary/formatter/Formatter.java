@@ -18,6 +18,6 @@ public abstract class Formatter {
 		return name;
 	}
 
-	public abstract FormattedMessage format(String item);
+	public abstract String format(String message);
 
 }

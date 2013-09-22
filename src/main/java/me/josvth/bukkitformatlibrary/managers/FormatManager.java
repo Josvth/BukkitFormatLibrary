@@ -5,14 +5,17 @@ import me.josvth.bukkitformatlibrary.formatter.*;
 import me.josvth.bukkitformatlibrary.formatter.Formatter;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FormatManager {
 
+	public static final Pattern GROUP_PATTERN = Pattern.compile("%%[^ ]+%%");
+
 	protected final Map<String, Class<? extends Formatter>> registeredFormatters = new HashMap<String, Class<? extends Formatter>>();
 
-	protected final Map<String, Formatter> formatters 	= new HashMap<String, Formatter>();
-	protected final Map<String, String> messages 		= new HashMap<String, String>();
-	protected final Map<String, FormattedMessage> preFormatted = new HashMap<String, FormattedMessage>();
+	protected final Map<String, Formatter> formatters 	       = new HashMap<String, Formatter>();
+	protected final Map<String, FormattedMessage> messages = new HashMap<String, FormattedMessage>();
 
 	public FormatManager() {
 		registerFormatter("accent", AccentFormatter.class);
@@ -25,7 +28,6 @@ public class FormatManager {
 		formatters.putAll(manager.formatters);
 		if(includeMessages) {
 			messages.putAll(manager.messages);
-			preFormatted.putAll(manager.preFormatted);
 		}
 	}
 
@@ -67,46 +69,50 @@ public class FormatManager {
 	}
 
 	// Message methods
-	public void addMessage(String key, String message) {
-		messages.put(key.toLowerCase(), message);
+	public FormattedMessage addMessage(String key, String message, boolean preformat) {
+
+		if (preformat) {
+			message = preformatMessage(message);
+		}
+
+		FormattedMessage formattedMessage = new FormattedMessage(message);
+		messages.put(key.toLowerCase(), formattedMessage);
+
+		return formattedMessage;
 	}
 
-	public void addPreFormattedMessage(String key, FormattedMessage message) {
-		preFormatted.put(key.toLowerCase(), message);
-	}
+	public String preformatMessage(String message) {
 
-	public String getUnformattedMessage(String key) {
-		return messages.get(key.toLowerCase());
-	}
+		Matcher matcher = GROUP_PATTERN.matcher(message);
 
-	public FormattedMessage getPreformattedMessage(String key) {
-		return preFormatted.get(key.toLowerCase());
+		if (matcher.lookingAt()) {
+
+			String[] formatterNames = matcher.group().split(Pattern.quote("|"));
+
+			// We take the rest of the string as the message
+			message = message.substring(matcher.end());
+
+			// We pre-format the message with the groups
+			for (String formatterName : formatterNames) {
+
+				Formatter formatter = getFormatter(formatterName);
+
+				if (formatter != null) {
+
+					// We pre-format the message following this group
+					message = formatter.format(message);
+
+				}
+
+			}
+
+		}
+
+		return message;
 	}
 
 	public FormattedMessage getMessage(String key) {
-
-		FormattedMessage message = getPreformattedMessage(key);
-
-		if (message != null) return message;
-
-		return getMessage("default", key);
-
-	}
-
-	public FormattedMessage getMessage(String formatterName, String key) {
-
-		final String message = getUnformattedMessage(key);
-
-		if (message == null)
-			return new FormattedMessage(key);
-
-		final Formatter formatter = getFormatter(formatterName);
-
-		if (formatter == null)
-			return new FormattedMessage(message);
-		else
-			return formatter.format(message);
-
+		return messages.get(key.toLowerCase());
 	}
 
 }

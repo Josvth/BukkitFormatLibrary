@@ -1,15 +1,13 @@
 package me.josvth.bukkitformatlibrary.managers;
 
-import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.bukkitformatlibrary.formatter.Formatter;
 import me.josvth.bukkitformatlibrary.formatter.FormatterGroup;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class YamlFormatManager extends FormatManager {
+
 
 	public YamlFormatManager() {
 		super();
@@ -207,50 +205,9 @@ public class YamlFormatManager extends FormatManager {
 
 	public void loadMessages(ConfigurationSection section) {
 
-		Pattern pattern = Pattern.compile("%%[^ ]+%%");
-
 		for (String key : section.getKeys(true)) {
 			if (section.isString(key)) {
-
-				String message = section.getString(key);
-
-				// Check if we can pre format this message
-				Matcher matcher = pattern.matcher(message);
-
-				if (matcher.lookingAt()) {
-
-					String[] formatterNames = matcher.group().split(Pattern.quote("|"));
-
-					// We take the rest of the string as the message
-					message = message.substring(matcher.end());
-
-					String preFormat = null;
-
-					// We pre-format the message with the groups
-					for (String formatterName : formatterNames) {
-
-						Formatter formatter = getFormatter(formatterName);
-
-						if (formatter != null) {
-
-							// Only if we found a valid group we initialize the variable
-							if (preFormat == null) preFormat = message;
-
-							// We pre-format the message following this group
-							preFormat = formatter.format(preFormat);
-
-						}
-
-					}
-
-					// Only if we could pre-format the message we add it
-					if (preFormat != null)
-						addPreFormattedMessage(key, new FormattedMessage(preFormat));
-
-				}
-
-				addMessage(key, message);
-
+				addMessage(key, section.getString(key), true);
 			}
 		}
 

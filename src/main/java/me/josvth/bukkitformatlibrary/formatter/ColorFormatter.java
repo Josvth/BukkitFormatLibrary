@@ -1,5 +1,6 @@
 package me.josvth.bukkitformatlibrary.formatter;
 
+import me.josvth.bukkitformatlibrary.FormattedMessage;
 import org.bukkit.ChatColor;
 
 import java.util.Map;
@@ -20,6 +21,8 @@ public class ColorFormatter extends Formatter {
 
 	@Override
 	public String format(String message) {
-		return mainColor + ChatColor.translateAlternateColorCodes(colorChar, message);
+		StringBuilder builder = new StringBuilder(mainColor.toString());
+		builder.append(ChatColor.translateAlternateColorCodes(colorChar, message));
+		return builder.toString();
 	}
 }

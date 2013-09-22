@@ -1,10 +1,15 @@
 package me.josvth.bukkitformatlibrary;
 
+import me.josvth.bukkitformatlibrary.formatter.Formatter;
 import org.bukkit.command.CommandSender;
 
 public class FormattedMessage {
 
 	private final String message;
+
+	public FormattedMessage(Formatter formatter, String message) {
+	   this.message = formatter.format(message);
+	}
 
 	public FormattedMessage(String message) {
 		this.message = message;
@@ -29,4 +34,7 @@ public class FormattedMessage {
 		sender.sendMessage(get(arguments));
 	}
 
+	public String getRaw() {
+		return message;
+	}
 }

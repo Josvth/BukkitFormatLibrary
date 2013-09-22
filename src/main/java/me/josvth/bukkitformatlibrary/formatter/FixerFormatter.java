@@ -1,5 +1,6 @@
 package me.josvth.bukkitformatlibrary.formatter;
 
+import me.josvth.bukkitformatlibrary.FormattedMessage;
 import org.bukkit.ChatColor;
 
 import java.util.Map;
@@ -17,7 +18,7 @@ public class FixerFormatter extends Formatter{
 
 	@Override
 	public String format(String message) {
-		return prefix + message + suffix;
+		return new StringBuilder(prefix).append(message).append(suffix).toString();
 	}
 
 }
