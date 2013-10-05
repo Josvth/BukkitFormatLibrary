@@ -30,6 +30,10 @@ public class FormattedMessage {
 
 	}
 
+	public void send(CommandSender sender) {
+		sender.sendMessage(message);
+	}
+
 	public void send(CommandSender sender, String... arguments) {
 		sender.sendMessage(get(arguments));
 	}

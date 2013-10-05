@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class FormatManager {
 
-	public static final Pattern GROUP_PATTERN = Pattern.compile("%%[^ ]+%%");
+	public static final Pattern GROUP_PATTERN = Pattern.compile("%{2}[^ %]+%{2}");
 
 	protected final Map<String, Class<? extends Formatter>> registeredFormatters = new HashMap<String, Class<? extends Formatter>>();
 
