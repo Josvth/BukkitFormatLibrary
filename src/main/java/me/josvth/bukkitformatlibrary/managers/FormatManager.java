@@ -87,7 +87,7 @@ public class FormatManager {
 
 		if (matcher.lookingAt()) {
 
-			String[] formatterNames = matcher.group().split(Pattern.quote("|"));
+			String[] formatterNames = matcher.group().substring(2, matcher.group().length() - 2).split(Pattern.quote("|"));
 
 			// We take the rest of the string as the message
 			message = message.substring(matcher.end());
