@@ -14,8 +14,8 @@ public class FormatManager {
 
 	protected final Map<String, Class<? extends Formatter>> registeredFormatters = new HashMap<String, Class<? extends Formatter>>();
 
-	protected final Map<String, Formatter> formatters 	       = new HashMap<String, Formatter>();
-	protected final Map<String, FormattedMessage> messages = new HashMap<String, FormattedMessage>();
+	protected final Map<String, Formatter> formatters 	       	= new HashMap<String, Formatter>();
+	protected final Map<String, FormattedMessage> messages 		= new HashMap<String, FormattedMessage>();
 
 	public FormatManager() {
 		registerFormatter("accent", AccentFormatter.class);
@@ -69,6 +69,10 @@ public class FormatManager {
 	}
 
 	// Message methods
+	public Map<String, FormattedMessage> getMessages() {
+		return messages;
+	}
+
 	public FormattedMessage addMessage(String key, String message, boolean preformat) {
 
 		if (preformat) {
