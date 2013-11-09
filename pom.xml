@@ -6,7 +6,7 @@
 
     <groupId>bukkitformatlibrary</groupId>
     <artifactId>bukkitformatlibrary</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.3-SNAPSHOT</version>
 
     <name>BukkitFormatLibrary</name>
     <description>A library for Bukkit plugins to format messages.</description>
@@ -94,70 +94,5 @@
             <url>dav:https://repository-windsofwinter.forge.cloudbees.com/snapshot/</url>
         </snapshotRepository>
     </distributionManagement>
-
-    <profiles>
-        <!--<profile>-->
-        <!--<id>jenkins</id>-->
-        <!--<activation>-->
-        <!--<territory>-->
-        <!--<name>env.BUILD_NUMBER</name>-->
-        <!--</territory>-->
-        <!--</activation>-->
-        <!--<properties>-->
-        <!--<project.build.number>${env.BUILD_NUMBER}</project.build.number>-->
-        <!--<project.build.version>${project.version}-b${project.build.number}</project.build.version>-->
-        <!--<project.build.name>${env.JOB_NAME}</project.build.name>-->
-        <!--</properties>-->
-        <!--</profile>-->
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <project.build.number>0</project.build.number>
-                <project.build.version>${project.version}-b${project.build.number}</project.build.version>
-                <project.build.name>${project.name}</project.build.name>
-            </properties>
-        </profile>
-        <profile>
-            <id>windsofwinter-release-repo</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <repositories>
-                <repository>
-                    <id>windsofwinter-release-repo</id>
-                    <name>Winds of Winter Release Repo</name>
-                    <url>dav:https://repository-windsofwinter.forge.cloudbees.com/release/</url>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                </repository>
-            </repositories>
-        </profile>
-        <profile>
-            <id>windsofwinter-snapshot-repo</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <repositories>
-                <repository>
-                    <id>windsofwinter-snapshot-repo</id>
-                    <name>Winds of Winter Snapshot Repo</name>
-                    <url>dav:https://repository-windsofwinter.forge.cloudbees.com/snapshot/</url>
-                    <releases>
-                        <enabled>false</enabled>
-                    </releases>
-                    <snapshots>
-                        <enabled>true</enabled>
-                    </snapshots>
-                </repository>
-            </repositories>
-        </profile>
-    </profiles>
 
 </project>

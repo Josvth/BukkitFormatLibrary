@@ -31,6 +31,12 @@ public class FormatManager {
 		}
 	}
 
+	public void unload() {
+		registeredFormatters.clear();
+		formatters.clear();
+		messages.clear();
+	}
+
 	// Formatter methods
 	public void registerFormatter(String ID, Class<? extends Formatter> formatter) {
 
@@ -116,7 +122,11 @@ public class FormatManager {
 	}
 
 	public FormattedMessage getMessage(String key) {
-		return messages.get(key.toLowerCase());
+		FormattedMessage message = messages.get(key.toLowerCase());
+		if (message == null) {
+			message = new FormattedMessage(key);
+		}
+		return message;
 	}
 
 }
