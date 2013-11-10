@@ -4,6 +4,8 @@ import me.josvth.bukkitformatlibrary.formatter.Formatter;
 import me.josvth.bukkitformatlibrary.formatter.FormatterGroup;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class YamlFormatManager extends FormatManager {
@@ -83,15 +85,13 @@ public class YamlFormatManager extends FormatManager {
 					if (clazz != null) {
 
 						try {
+                            addFormatter((Formatter) getDeserializeMethod(clazz).invoke(name, getSettings(section, name, null)));
+                       	} catch (Exception dese) {
+							try {
+								addFormatter((Formatter) getConstructor(clazz).newInstance(name));
+							} catch (Exception cone) {
 
-							Formatter formatter = clazz.getConstructor(String.class, Map.class).newInstance(name, getSettings(section, name, null));
-
-							addFormatter(formatter);
-
-
-
-						} catch (Exception e) {
-							e.printStackTrace();
+							}
 						}
 
 					}

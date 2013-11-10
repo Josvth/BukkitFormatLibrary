@@ -4,6 +4,9 @@ import me.josvth.bukkitformatlibrary.FormattedMessage;
 import me.josvth.bukkitformatlibrary.formatter.*;
 import me.josvth.bukkitformatlibrary.formatter.Formatter;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +25,7 @@ public class FormatManager {
 		registerFormatter("color", ColorFormatter.class);
 		registerFormatter("fixer", FixerFormatter.class);
 	}
-	
+
 	public FormatManager(FormatManager manager, boolean includeMessages) {
 		registeredFormatters.putAll(manager.registeredFormatters);
 		formatters.putAll(manager.formatters);
@@ -40,18 +43,26 @@ public class FormatManager {
 	// Formatter methods
 	public void registerFormatter(String ID, Class<? extends Formatter> formatter) {
 
-		// We check if we can construct this formatter
 		try {
-
-			formatter.getConstructor(String.class, Map.class);
-
-			// We register the formatter
-			registeredFormatters.put(ID.toLowerCase(), formatter);
-
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
+			if (getConstructor(formatter) != null || getDeserializeMethod(formatter) != null) {
+				registeredFormatters.put(ID.toLowerCase(), formatter);
+			}
+		}catch (NoSuchMethodException e) {
+			throw new IllegalArgumentException("Formatter does not have a proper constructor or deserialize method.");
 		}
 
+	}
+
+	protected Constructor getConstructor(Class<? extends Formatter> formatter) throws NoSuchMethodException {
+		return formatter.getConstructor(String.class);
+	}
+
+	protected Method getDeserializeMethod(Class<? extends Formatter> formatter) throws NoSuchMethodException {
+		final Method method = formatter.getDeclaredMethod("deserialize", String.class, Map.class);
+		if (!Formatter.class.isAssignableFrom(method.getReturnType())) {
+			throw new NoSuchElementException();
+		}
+		return method;
 	}
 
 	public Class<? extends Formatter> getRegisteredFormatter(String ID) {

@@ -10,7 +10,7 @@ public class FormatterGroup extends Formatter {
 	private final List<Formatter> formatters;
 
 	public FormatterGroup(String name, List<Formatter> formatters) {
-		super(name, null);
+		super(name);
 		this.formatters = formatters;
 	}
 

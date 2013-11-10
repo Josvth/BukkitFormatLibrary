@@ -10,7 +10,7 @@ public abstract class Formatter {
 
 	private final String name;
 
-	public Formatter(String name, Map<String, Object> settings) {
+	public Formatter(String name) {
 		this.name = name;
 	}
 

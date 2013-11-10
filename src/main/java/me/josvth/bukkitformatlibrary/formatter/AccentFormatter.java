@@ -10,20 +10,23 @@ import java.util.regex.Pattern;
 
 public class AccentFormatter extends Formatter {
 
+	private static final ChatColor DEFAULT_ACCENT_COLOR = ChatColor.GOLD;
 	private static final String DEFAULT_BEGIN = ">>";
 	private static final String DEFAULT_END = "<<";
-	private static final ChatColor DEFAULT_ACCENT_COLOR = ChatColor.GOLD;
 
-	private final ChatColor accentColor;
-	private final String begin;
-	private final String end;
+	private ChatColor accentColor = DEFAULT_ACCENT_COLOR;
+	private String begin = DEFAULT_BEGIN;
+	private String end = DEFAULT_END;
 
-	public AccentFormatter(String name, Map<String, Object> settings) {
-		super(name, settings);
+	public AccentFormatter(String name) {
+		super(name);
+	}
 
-		begin = (settings.get("begin") instanceof String)? (String)settings.get("begin"): DEFAULT_BEGIN;
-		end = (settings.get("end") instanceof String)? (String)settings.get("end"): DEFAULT_END;
-		accentColor = (settings.get("accent-color") instanceof String)? ChatColor.getByChar((String) settings.get("accent-color")): DEFAULT_ACCENT_COLOR;
+	public AccentFormatter(String name, ChatColor accentColor, String begin, String end) {
+		super(name);
+		this.accentColor = accentColor;
+		this.begin = begin;
+		this.end = end;
 	}
 
 	@Override
@@ -77,4 +80,24 @@ public class AccentFormatter extends Formatter {
 
 	}
 
+	public static final AccentFormatter deserialize(String name, Map<String, Object> settings) {
+
+		ChatColor chatColor = DEFAULT_ACCENT_COLOR;
+		if (settings.get("accent-color") instanceof String) {
+			chatColor = ChatColor.getByChar((String) settings.get("accent-color"));
+		}
+
+		String begin = DEFAULT_BEGIN;
+		if (settings.get("accent-begin") instanceof String) {
+			begin = (String) settings.get("accent-begin");
+		}
+
+		String end = DEFAULT_END;
+		if (settings.get("accent-end") instanceof String) {
+			end = (String) settings.get("accent-end");
+		}
+
+		return new AccentFormatter(name, chatColor, begin, end);
+
+	}
 }
