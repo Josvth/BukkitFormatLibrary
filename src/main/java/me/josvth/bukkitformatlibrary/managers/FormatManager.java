@@ -44,12 +44,22 @@ public class FormatManager {
 	public void registerFormatter(String ID, Class<? extends Formatter> formatter) {
 
 		try {
-			if (getConstructor(formatter) != null || getDeserializeMethod(formatter) != null) {
-				registeredFormatters.put(ID.toLowerCase(), formatter);
-			}
-		}catch (NoSuchMethodException e) {
-			throw new IllegalArgumentException("Formatter does not have a proper constructor or deserialize method.");
+			getDeserializeMethod(formatter);
+			registeredFormatters.put(ID.toLowerCase(), formatter);
+			return;
+		} catch (NoSuchMethodException e) {
+
 		}
+
+		try {
+			getConstructor(formatter);
+			registeredFormatters.put(ID.toLowerCase(), formatter);
+			return;
+		} catch (NoSuchMethodException e) {
+
+		}
+
+		throw new IllegalArgumentException("Formatter does not have proper constructor or deserialize method.");
 
 	}
 
@@ -103,6 +113,10 @@ public class FormatManager {
 	}
 
 	public String preformatMessage(String message) {
+
+		if (getDefaultFormatter() != null) {
+			message = getDefaultFormatter().format(message);
+		}
 
 		Matcher matcher = GROUP_PATTERN.matcher(message);
 

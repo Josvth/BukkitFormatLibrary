@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>bukkitformatlibrary</groupId>
+    <groupId>me.josvth</groupId>
     <artifactId>bukkitformatlibrary</artifactId>
     <version>1.4-SNAPSHOT</version>
 
@@ -34,6 +34,7 @@
         </dependency>
     </dependencies>
 
+
     <build>
         <plugins>
             <plugin>
@@ -46,32 +47,22 @@
                 </configuration>
             </plugin>
             <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <version>2.2.1</version>
-            <configuration>
-                <attach>true</attach>
-            </configuration>
-            <executions>
-                <execution>
-                    <phase>verify</phase>
-                    <goals>
-                        <goal>jar</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
-
-
-        <extensions>
-            <!-- Extension required to deploy a snapshot or a release to the CloudBees remote maven repository using Webdav -->
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-webdav</artifactId>
-                <version>1.0-beta-2</version>
-            </extension>
-        </extensions>
 
     </build>
 
@@ -81,18 +72,5 @@
         <project.build.version>UNKNOWN</project.build.version>
         <project.build.name>UNKNOWN</project.build.name>
     </properties>
-
-    <distributionManagement>
-        <repository>
-            <id>windsofwinter-release-repo</id>
-            <name>Winds of Winter Release Repo</name>
-            <url>dav:https://repository-windsofwinter.forge.cloudbees.com/release/</url>
-        </repository>
-        <snapshotRepository>
-            <id>windsofwinter-snapshot-repo</id>
-            <name>Winds of Winter Snapshot Repo</name>
-            <url>dav:https://repository-windsofwinter.forge.cloudbees.com/snapshot/</url>
-        </snapshotRepository>
-    </distributionManagement>
 
 </project>
