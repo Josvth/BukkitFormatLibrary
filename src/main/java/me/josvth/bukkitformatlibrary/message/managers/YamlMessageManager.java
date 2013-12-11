@@ -1,25 +1,23 @@
-package me.josvth.bukkitformatlibrary.managers;
+package me.josvth.bukkitformatlibrary.message.managers;
 
 import me.josvth.bukkitformatlibrary.formatter.Formatter;
 import me.josvth.bukkitformatlibrary.formatter.FormatterGroup;
+import me.josvth.bukkitformatlibrary.formatter.FormatterUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 
-public class YamlFormatManager extends FormatManager {
+public class YamlMessageManager extends MessageManager {
 
-
-	public YamlFormatManager() {
+	public YamlMessageManager() {
 		super();
 	}
 
-	public YamlFormatManager(FormatManager manager, boolean includeMessages) {
-		super(manager, includeMessages);
-	}
+//	public YamlMessageManager(BasicFormatManager manager, boolean includeMessages) {
+//		super(manager, includeMessages);
+//	}
 
-	public YamlFormatManager(ConfigurationSection formattersSection, ConfigurationSection messageSection) {
+	public YamlMessageManager(ConfigurationSection formattersSection, ConfigurationSection messageSection) {
 		loadFormatters(formattersSection);
 		loadMessages(messageSection);
 	}
@@ -49,17 +47,17 @@ public class YamlFormatManager extends FormatManager {
 						if (formatterNames != null) {
 
 							// Check if all groups formatters are loaded
-							if (this.formatters.keySet().containsAll(formatterNames)) {
+							if (getFormatterHolder().getFormatters().keySet().containsAll(formatterNames)) {
 
 								List<Formatter> groupFormatters = new ArrayList<Formatter>();
 
 								// Make formatter list
 								for (String formatter : formatterNames) {
-									groupFormatters.add(getFormatter(formatter));
+									groupFormatters.add(getFormatterHolder().getFormatter(formatter));
 								}
 
 								// Add group formatter
-								formatters.put(name, new FormatterGroup(name, groupFormatters));
+                                getFormatterHolder().getFormatters().put(name, new FormatterGroup(name, groupFormatters));
 
 								// Remove from unloaded
 								iterator.remove();
@@ -80,15 +78,15 @@ public class YamlFormatManager extends FormatManager {
 
 				} else if (type != null) {
 
-					Class<? extends Formatter> clazz = getRegisteredFormatter(type);
+					Class<? extends Formatter> clazz = getFormatterHolder().getRegisteredFormatter(type);
 
 					if (clazz != null) {
 
 						try {
-                            addFormatter((Formatter) getDeserializeMethod(clazz).invoke(name, getSettings(section, name, null)));
+                            getFormatterHolder().addFormatter((Formatter) FormatterUtils.getDeserializerMethod(clazz).invoke(name, getSettings(section, name, null)));
                        	} catch (Exception dese) {
 							try {
-								addFormatter((Formatter) getConstructor(clazz).newInstance(name));
+                                getFormatterHolder().addFormatter((Formatter) FormatterUtils.getConstructor(clazz).newInstance(name));
 							} catch (Exception cone) {
 
 							}
@@ -109,7 +107,8 @@ public class YamlFormatManager extends FormatManager {
 
 	}
 
-	private List<String> getFormatterNames(ConfigurationSection section, String groupName, Set<String> children) throws IllegalArgumentException {
+
+    private List<String> getFormatterNames(ConfigurationSection section, String groupName, Set<String> children) throws IllegalArgumentException {
 
 		List<String> formatters = null;
 
@@ -207,10 +206,11 @@ public class YamlFormatManager extends FormatManager {
 
 		for (String key : section.getKeys(true)) {
 			if (section.isString(key)) {
-				addMessage(key, section.getString(key), true);
+                addMessage(key, section.getString(key), true);
 			}
 		}
 
 	}
+
 
 }

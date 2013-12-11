@@ -24,7 +24,10 @@ public class ColorFormatter extends Formatter {
 
 	@Override
 	public String format(String message) {
-		StringBuilder builder = new StringBuilder(mainColor.toString());
+        final StringBuilder builder = new StringBuilder();
+		if (mainColor != null) {
+			builder.append(mainColor);
+		}
 		builder.append(ChatColor.translateAlternateColorCodes(colorChar, message));
 		return builder.toString();
 	}

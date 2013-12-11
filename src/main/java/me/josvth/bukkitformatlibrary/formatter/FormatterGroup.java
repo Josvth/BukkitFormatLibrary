@@ -1,8 +1,5 @@
 package me.josvth.bukkitformatlibrary.formatter;
 
-import me.josvth.bukkitformatlibrary.FormattedMessage;
-import me.josvth.bukkitformatlibrary.formatter.Formatter;
-
 import java.util.List;
 
 public class FormatterGroup extends Formatter {

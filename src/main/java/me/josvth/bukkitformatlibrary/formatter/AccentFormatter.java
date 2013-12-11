@@ -1,6 +1,5 @@
 package me.josvth.bukkitformatlibrary.formatter;
 
-import me.josvth.bukkitformatlibrary.FormattedMessage;
 import org.bukkit.ChatColor;
 
 import java.util.ArrayList;

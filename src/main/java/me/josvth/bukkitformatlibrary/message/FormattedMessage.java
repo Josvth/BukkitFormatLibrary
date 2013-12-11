@@ -1,4 +1,4 @@
-package me.josvth.bukkitformatlibrary;
+package me.josvth.bukkitformatlibrary.message;
 
 import me.josvth.bukkitformatlibrary.formatter.Formatter;
 import org.bukkit.command.CommandSender;
