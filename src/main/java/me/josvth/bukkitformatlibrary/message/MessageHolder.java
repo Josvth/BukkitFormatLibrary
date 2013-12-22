@@ -18,9 +18,17 @@ public class MessageHolder {
     public FormattedMessage addMessage(String key, String message) {
 
         FormattedMessage formattedMessage = new FormattedMessage(message);
-        messages.put(key.toLowerCase(), formattedMessage);
+        addMessage(key.toLowerCase(), formattedMessage);
 
         return formattedMessage;
+    }
+
+    public void addMessage(String key, FormattedMessage message) {
+        messages.put(key.toLowerCase(), message);
+    }
+
+    public boolean hasMessage(String key) {
+        return messages.containsKey(key);
     }
 
     public FormattedMessage getMessage(String key) {

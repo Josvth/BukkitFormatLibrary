@@ -7,10 +7,10 @@ import java.util.Map;
 public class ColorFormatter extends Formatter {
 
 	private static final char DEFAULT_COLOR_CHAR = '&';
-	private static final ChatColor DEFAULT_MAIN_COLOR = ChatColor.WHITE;
+	private static final ChatColor DEFAULT_MAIN_COLOR = null;
 
 	private char colorChar = DEFAULT_COLOR_CHAR;
-	private ChatColor mainColor = DEFAULT_MAIN_COLOR;
+	private ChatColor mainColor = null;
 
 	public ColorFormatter(String name) {
 		super(name);
