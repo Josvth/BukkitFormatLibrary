@@ -5,6 +5,8 @@ import java.util.Map;
 
 public class MessageHolder {
 
+    private boolean keyWhenMissing = true;
+
     private final Map<String, FormattedMessage> messages = new HashMap<String, FormattedMessage>();
 
     public void clear() {
@@ -31,9 +33,17 @@ public class MessageHolder {
         return messages.containsKey(key);
     }
 
+    public boolean isKeyWhenMissing() {
+        return keyWhenMissing;
+    }
+
+    public void setKeyWhenMissing(boolean keyWhenMissing) {
+        this.keyWhenMissing = keyWhenMissing;
+    }
+
     public FormattedMessage getMessage(String key) {
         FormattedMessage message = messages.get(key.toLowerCase());
-        if (message == null) {
+        if (message == null && isKeyWhenMissing()) {
             message = new FormattedMessage(key);
         }
         return message;
