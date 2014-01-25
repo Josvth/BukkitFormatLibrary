@@ -43,10 +43,12 @@ public class MessageHolder {
 
     public FormattedMessage getMessage(String key) {
         FormattedMessage message = messages.get(key.toLowerCase());
-        if (message == null && isKeyWhenMissing()) {
-            message = new FormattedMessage(key);
-        } else {
-            message = new FormattedMessage(null);
+        if (message == null) {
+            if (isKeyWhenMissing()) {
+                message = new FormattedMessage(key);
+            } else {
+                message = new FormattedMessage(null);
+            }
         }
         return message;
     }
