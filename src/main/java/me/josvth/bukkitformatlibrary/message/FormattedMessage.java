@@ -5,40 +5,51 @@ import org.bukkit.command.CommandSender;
 
 public class FormattedMessage {
 
-	private final String message;
+    private final String message;
 
-	public FormattedMessage(Formatter formatter, String message) {
-	   this.message = formatter.format(message);
-	}
+    public FormattedMessage(Formatter formatter, String message) {
+        this.message = formatter.format(message);
+    }
 
-	public FormattedMessage(String message) {
-		this.message = message;
-	}
+    public FormattedMessage(String message) {
+        this.message = message;
+    }
 
-	public String get() {
-		return message;
-	}
-	
-	public String get(String... arguments) {
+    public String get() {
+        return message;
+    }
 
-		String message = this.message;
+    public String get(String... arguments) {
 
-		for (int i = 1; i < arguments.length; i+= 2)
-			message = message.replaceAll(arguments[i - 1], arguments[i]);
+        if (getRaw() != null) {
 
-		return message;
+            String message = getRaw();
 
-	}
+            for (int i = 1; i < arguments.length; i+= 2) {
+                message = message.replaceAll(arguments[i - 1], arguments[i]);
+            }
 
-	public void send(CommandSender sender) {
-		sender.sendMessage(message);
-	}
+            return message;
 
-	public void send(CommandSender sender, String... arguments) {
-		sender.sendMessage(get(arguments));
-	}
+        }
 
-	public String getRaw() {
-		return message;
-	}
+        return getRaw();
+
+    }
+
+    public void send(CommandSender sender) {
+        if (getRaw() != null) {
+            sender.sendMessage(get());
+        }
+    }
+
+    public void send(CommandSender sender, String... arguments) {
+        if (getRaw() != null) {
+            sender.sendMessage(get(arguments));
+        }
+    }
+
+    public String getRaw() {
+        return message;
+    }
 }

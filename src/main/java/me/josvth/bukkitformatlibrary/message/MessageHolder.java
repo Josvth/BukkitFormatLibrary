@@ -45,6 +45,8 @@ public class MessageHolder {
         FormattedMessage message = messages.get(key.toLowerCase());
         if (message == null && isKeyWhenMissing()) {
             message = new FormattedMessage(key);
+        } else {
+            message = new FormattedMessage(null);
         }
         return message;
     }
