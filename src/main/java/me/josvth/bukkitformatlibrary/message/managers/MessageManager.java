@@ -46,28 +46,32 @@ public class MessageManager {
 
     public String preformatMessage(String message) {
 
-        if (getFormatterHolder().getDefaultFormatter() != null) {
-            message = getFormatterHolder().getDefaultFormatter().format(message);
-        }
+        if (message != null) {
 
-        Matcher matcher = GROUP_PATTERN.matcher(message);
+            if (getFormatterHolder().getDefaultFormatter() != null) {
+                message = getFormatterHolder().getDefaultFormatter().format(message);
+            }
 
-        if (matcher.lookingAt()) {
+            Matcher matcher = GROUP_PATTERN.matcher(message);
 
-            String[] formatterNames = matcher.group().substring(2, matcher.group().length() - 2).split(Pattern.quote("|"));
+            if (matcher.lookingAt()) {
 
-            // We take the rest of the string as the message
-            message = message.substring(matcher.end());
+                String[] formatterNames = matcher.group().substring(2, matcher.group().length() - 2).split(Pattern.quote("|"));
 
-            // We pre-format the message with the groups
-            for (String formatterName : formatterNames) {
+                // We take the rest of the string as the message
+                message = message.substring(matcher.end());
 
-                Formatter formatter = getFormatterHolder().getFormatter(formatterName);
+                // We pre-format the message with the groups
+                for (String formatterName : formatterNames) {
 
-                if (formatter != null) {
+                    Formatter formatter = getFormatterHolder().getFormatter(formatterName);
 
-                    // We pre-format the message following this group
-                    message = formatter.format(message);
+                    if (formatter != null) {
+
+                        // We pre-format the message following this group
+                        message = formatter.format(message);
+
+                    }
 
                 }
 
