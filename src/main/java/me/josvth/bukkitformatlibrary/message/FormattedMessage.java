@@ -3,6 +3,8 @@ package me.josvth.bukkitformatlibrary.message;
 import me.josvth.bukkitformatlibrary.formatter.Formatter;
 import org.bukkit.command.CommandSender;
 
+import java.util.regex.Matcher;
+
 public class FormattedMessage {
 
     private final String message;
@@ -26,7 +28,7 @@ public class FormattedMessage {
             String message = getRaw();
 
             for (int i = 1; i < arguments.length; i+= 2) {
-                message = message.replaceAll(arguments[i - 1], arguments[i]);
+                message = message.replaceAll(Matcher.quoteReplacement(arguments[i - 1]), Matcher.quoteReplacement(arguments[i]));
             }
 
             return message;
